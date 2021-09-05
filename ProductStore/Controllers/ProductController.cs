@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProductStore.Models.Entities;
 using ProductStore.Models.Interfaces;
-using System;
+using ProductStore.Models.ViewModels;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ProductStore.Controllers
 {
@@ -26,21 +24,27 @@ namespace ProductStore.Controllers
 
         public ActionResult Create()
         {
-            return View();
+            var product = _repository.GetProductEditViewModel();
+            return View(product);
         }
 
         [HttpPost]
-        public ActionResult Create(Product product)
+        public ActionResult Create(ProductEditViewModel productViewModel)
         {
-            try
+            if(ModelState.IsValid)
             {
-                _repository.Save(product);
-                return RedirectToAction("Index");
+                try
+                {
+                    _repository.Save(productViewModel);
+                    TempData["message"] = string.Format("{0} har blitt opprettet", productViewModel.Name);
+                    return RedirectToAction("Index");
+                }
+                catch
+                {
+                    return View(productViewModel);
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return View(productViewModel);
         }
     }
 }

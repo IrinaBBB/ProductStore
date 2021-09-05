@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ProductStore</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/bootswatch/flatly/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="favicon" href="~/favicon.ico">
@@ -32,6 +33,17 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @if (TempData["message"] != null)
+            {
+                @*<div class="alert alert-success alert-dismissible">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                @TempData["message"]
+            </div>*@
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["message"]
+                <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+            </div>
+            }
             @RenderBody()
         </main>
     </div>

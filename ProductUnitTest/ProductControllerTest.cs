@@ -4,6 +4,7 @@ using Moq;
 using ProductStore.Controllers;
 using ProductStore.Models.Entities;
 using ProductStore.Models.Interfaces;
+using ProductStore.Models.ViewModels;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -20,11 +21,11 @@ namespace ProductUnitTest
             _repository = new Mock<IProductRepository>();
             List<Product> fakeproducts = new List<Product>
             {
-                new Product{ Name = "Hammer", Price = 121.50m, Category = "Verktøy"},
-                new Product{ Name = "Vinkelsliper", Price = 1520.00m, Category = "Verktøy"},
-                new Product{ Name = "Melk", Price = 14.50m, Category = "Dagligvarer"},
-                new Product{ Name = "Kjøttkaker", Price = 32.00m, Category = "Dagligvarer"},
-                new Product{ Name = "Brød", Price = 25.50m, Category = "Dagligvarer"}
+                new Product{ Name = "Hammer", Price = 121.50m, CategoryId = 1},
+                new Product{ Name = "Vinkelsliper", Price = 1520.00m, CategoryId = 1},
+                new Product{ Name = "Melk", Price = 14.50m, CategoryId = 2},
+                new Product{ Name = "Kjøttkaker", Price = 32.00m, CategoryId = 2},
+                new Product{ Name = "Brød", Price = 25.50m, CategoryId = 2}
             };
             _repository.Setup(x => x.GetAll()).Returns(fakeproducts);
         }
@@ -63,16 +64,16 @@ namespace ProductUnitTest
         {
             // Arrange 
             _repository = new Mock<IProductRepository>();
-            _repository.Setup(x => x.Save(It.IsAny<Product>()));
+            _repository.Setup(x => x.Save(It.IsAny<ProductEditViewModel>()));
             var controller = new ProductController(_repository.Object);
 
             // Act 
-            var result = controller.Create(new Product());
+            var result = controller.Create(new ProductEditViewModel());
 
             // Assert 
             _repository.VerifyAll();
             // test på at save er kalt et betemt antall ganger
-            _repository.Verify(x => x.Save(It.IsAny<Product>()), Times.Exactly(1));
+            _repository.Verify(x => x.Save(It.IsAny<ProductEditViewModel>()), Times.Exactly(1));
 
         }
     }

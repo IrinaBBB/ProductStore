@@ -1,4 +1,4 @@
-﻿@model ProductStore.Models.Entities.Product
+﻿@model ProductStore.Models.ViewModels.ProductEditViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -27,11 +27,14 @@
                 <input asp-for="Price" class="form-control" />
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Category" class="control-label"></label>
-                <input asp-for="Category" class="form-control" />
-                <span asp-validation-for="Category" class="text-danger"></span>
-            </div>
+            <select class="form-select my-4" asp-for="CategoryId" 
+                    asp-items="@(new SelectList(Model.Categories, "CategoryId", "Name"))">
+                <option>Please Select Category</option>
+            </select>
+            <select class="form-select my-4" asp-for="ManufacturerId" 
+                    asp-items="@(new SelectList(Model.Manufacturers, "ManufacturerId", "Name"))">
+                <option>Please Select Manufacturer</option>
+            </select>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
