@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductStore.Controllers;
 using ProductStore.Models.Entities;
+using ProductStore.Models.Interfaces;
+using ProductStore.Models.Repositories;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -16,7 +18,8 @@ namespace ProductUnitTest
         public void IndexReturnsNotNullResult()
         {
             // Arrange
-            var controller = new ProductController();
+            _repository = new FakeProductRepository();
+            var controller = new ProductController(_repository);
 
             // Act 
             var result = controller.Index() as ViewResult;
