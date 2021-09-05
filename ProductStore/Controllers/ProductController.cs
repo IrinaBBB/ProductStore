@@ -23,5 +23,24 @@ namespace ProductStore.Controllers
 
             return View(products);
         }
+
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Create(Product product)
+        {
+            try
+            {
+                _repository.Save(product);
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+        }
     }
 }

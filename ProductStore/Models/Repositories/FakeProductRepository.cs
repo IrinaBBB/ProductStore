@@ -22,5 +22,10 @@ namespace ProductStore.Models.Repositories
 
             return products;
         }
+
+        public void Save(Product product)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
