@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -17,14 +16,14 @@ namespace ProductUnitTest
     {
         private Mock<IProductRepository> _repository;
 
-        List<Product> fakeProducts; 
-        List<Category> fakeCategories;
+        private List<Product> _fakeProducts;
+        private List<Category> _fakeCategories;
 
         [TestInitialize]
         public void SetupContext()
         {
             _repository = new Mock<IProductRepository>();
-            var fakeProducts = new List<Product>
+            _fakeProducts = new List<Product>
             {
                 new() { Name = "Hammer", Price = 121.50m, CategoryId = 1},
                 new() { Name = "Vinkelsliper", Price = 1520.00m, CategoryId = 1},
@@ -32,7 +31,7 @@ namespace ProductUnitTest
                 new() { Name = "Kjøttkaker", Price = 32.00m, CategoryId = 2},
                 new() { Name = "Brød", Price = 25.50m, CategoryId = 2}
             };
-            fakeCategories = new List<Category>
+            _fakeCategories = new List<Category>
             {
                 new() { Name = "Verktøy", CategoryId = 3 },                 
                 new() { Name = "Dagligvarer", CategoryId = 2 }, 
@@ -40,7 +39,7 @@ namespace ProductUnitTest
 
             };
 
-            _repository.Setup(x => x.GetAll()).Returns(fakeProducts);
+            _repository.Setup(x => x.GetAll()).Returns(_fakeProducts);
         }
 
         [TestMethod]
