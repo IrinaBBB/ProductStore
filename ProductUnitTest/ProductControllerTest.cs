@@ -34,9 +34,9 @@ namespace ProductUnitTest
             };
             fakeCategories = new List<Category>
             {
-                new Category { Name = "Verktøy", CategoryId = 3 },                 
-                new Category { Name = "Dagligvarer", CategoryId = 2 }, 
-                new Category { Name = "Kjøretøy", CategoryId = 1 }
+                new() { Name = "Verktøy", CategoryId = 3 },                 
+                new() { Name = "Dagligvarer", CategoryId = 2 }, 
+                new() { Name = "Kjøretøy", CategoryId = 1 }
 
             };
 
@@ -127,6 +127,30 @@ namespace ProductUnitTest
             //Assert
             Assert.IsNotNull(result, "RedirectToIndex needs to redirect to the Index action");            
             Assert.AreEqual("Index", result.ActionName as string);
+        }
+
+        [TestMethod]
+        public void CreateReturnsViewIfModelIsInvalid()
+        {
+            //Arrange
+            var mockRepo = new Mock<IProductRepository>();
+            var controller = new ProductController(mockRepo.Object);
+            controller.ControllerContext = MockHelpers.FakeControllerContext(false);
+            var tempData = new
+                TempDataDictionary(
+                    controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
+            controller.TempData = tempData;
+            var model = new ProductEditViewModel
+            {
+                Name = ""
+            };
+            controller.ModelState.AddModelError("x", "Test Error");
+
+            //Act
+            var result = controller.Create(model) as ViewResult;
+
+            //Assert
+            Assert.IsNotNull(result, "View Result is null");
         }
     }
 }

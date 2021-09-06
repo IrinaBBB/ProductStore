@@ -17,7 +17,7 @@ namespace ProductStore.Controllers
 
         public ActionResult Index()
         {
-            IEnumerable<Product> products = _repository.GetAll();
+            var products = _repository.GetAll();
 
             return View(products);
         }
@@ -29,22 +29,21 @@ namespace ProductStore.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Create(ProductEditViewModel productViewModel)
         {
-            if(ModelState.IsValid)
+            if (!ModelState.IsValid) return View(productViewModel);
+
+            try
             {
-                try
-                {
-                    _repository.Save(productViewModel);
-                    TempData["message"] = string.Format("{0} har blitt opprettet", productViewModel.Name);
-                    return RedirectToAction("Index");
-                }
-                catch
-                {
-                    return View(productViewModel);
-                }
+                _repository.Save(productViewModel);
+                TempData["message"] = $"{productViewModel.Name} har blitt opprettet";
+                return RedirectToAction("Index");
             }
-            return View(productViewModel);
+            catch
+            {
+                return View(productViewModel);
+            }
         }
     }
 }
