@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -7,27 +8,52 @@ using ProductStore.Models.Interfaces;
 using ProductStore.Models.ViewModels;
 using System.Collections;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace ProductUnitTest
 {
     [TestClass]
     public class ProductControllerTest
     {
-        Mock<IProductRepository> _repository;
+        private Mock<IProductRepository> _repository;
+
+        List<Product> fakeProducts; 
+        List<Category> fakeCategories;
 
         [TestInitialize]
-        public void Setup()
+        public void SetupContext()
         {
             _repository = new Mock<IProductRepository>();
-            List<Product> fakeproducts = new List<Product>
+            var fakeProducts = new List<Product>
             {
-                new Product{ Name = "Hammer", Price = 121.50m, CategoryId = 1},
-                new Product{ Name = "Vinkelsliper", Price = 1520.00m, CategoryId = 1},
-                new Product{ Name = "Melk", Price = 14.50m, CategoryId = 2},
-                new Product{ Name = "Kjøttkaker", Price = 32.00m, CategoryId = 2},
-                new Product{ Name = "Brød", Price = 25.50m, CategoryId = 2}
+                new() { Name = "Hammer", Price = 121.50m, CategoryId = 1},
+                new() { Name = "Vinkelsliper", Price = 1520.00m, CategoryId = 1},
+                new() { Name = "Melk", Price = 14.50m, CategoryId = 2},
+                new() { Name = "Kjøttkaker", Price = 32.00m, CategoryId = 2},
+                new() { Name = "Brød", Price = 25.50m, CategoryId = 2}
             };
-            _repository.Setup(x => x.GetAll()).Returns(fakeproducts);
+            fakeCategories = new List<Category>
+            {
+                new Category { Name = "Verktøy", CategoryId = 3 },                 
+                new Category { Name = "Dagligvarer", CategoryId = 2 }, 
+                new Category { Name = "Kjøretøy", CategoryId = 1 }
+
+            };
+
+            _repository.Setup(x => x.GetAll()).Returns(fakeProducts);
+        }
+
+        [TestMethod]
+        public void CreateReturnsNotNullResult()
+        {
+            // Arrange 
+            var controller = new ProductController(_repository.Object);
+
+            // Act 
+            var result = controller.Create() as ViewResult;
+
+            // Assert
+            Assert.IsNotNull(result, "View Result is null");
         }
 
         [TestMethod]
@@ -40,7 +66,7 @@ namespace ProductUnitTest
             var result = controller.Index() as ViewResult;
 
             // Assert
-            Assert.IsNotNull(result, "View Result i null");
+            Assert.IsNotNull(result, "View Result is null");
         }
 
         [TestMethod]
@@ -72,9 +98,35 @@ namespace ProductUnitTest
 
             // Assert 
             _repository.VerifyAll();
-            // test på at save er kalt et betemt antall ganger
+            // test på at save er kalt et bestemt antall ganger
             _repository.Verify(x => x.Save(It.IsAny<ProductEditViewModel>()), Times.Exactly(1));
 
+        }
+
+        [TestMethod]
+        public void CreateRedirectActionRedirectsToIndexAction()
+        {
+            //Arrange
+            var mockRepo = new Mock<IProductRepository>();            
+            var controller = new ProductController(mockRepo.Object);            
+            controller.ControllerContext = MockHelpers.FakeControllerContext(false);
+
+            var tempData = new
+                TempDataDictionary(
+                    controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>()); 
+            controller.TempData = tempData; 
+            var model = new ProductEditViewModel
+            {
+                Price = 100,
+                Description = "Description of product"
+            };
+
+            //Act
+            var result = controller.Create(model) as RedirectToActionResult;
+
+            //Assert
+            Assert.IsNotNull(result, "RedirectToIndex needs to redirect to the Index action");            
+            Assert.AreEqual("Index", result.ActionName as string);
         }
     }
 }
